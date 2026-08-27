@@ -3,160 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payflow - Sign In & Register</title>
+    <title>Payflow - Enterprise Payment Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient: radial-gradient(circle at top left, #312e81, #1e1b4b, #0f172a);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
+
         body {
-            background-color: #f4f7f6;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
         }
-        .container {
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+        /* Ambient Glow Effect */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(99, 102, 241, 0.15);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .main-wrapper {
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
+            padding: 20px;
         }
-        h2 {
-            margin-bottom: 24px;
-            color: #333;
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .brand-header {
             text-align: center;
+            margin-bottom: 30px;
         }
-        .form-group {
+
+        .logo-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+
+        .brand-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
             margin-bottom: 20px;
+            color: var(--text-main);
         }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             font-size: 14px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.2s ease;
+            background-color: #f8fafc;
+            color: var(--text-main);
         }
+
         input:focus {
-            border-color: #007bff;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
+
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #007bff;
+            padding: 14px;
+            background-color: var(--primary);
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             color: white;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
+
         button:hover {
-            background-color: #0056b3;
+            background-color: var(--primary-hover);
         }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
         .toggle-link {
             text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
-            color: #666;
+            margin-top: 22px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .toggle-link span {
+            color: var(--primary);
+            font-weight: 600;
             cursor: pointer;
         }
-        .toggle-link span {
-            color: #007bff;
-            font-weight: bold;
+
+        .toggle-link span:hover {
+            text-decoration: underline;
         }
+
         .hidden {
             display: none;
         }
+
         #message {
-            margin-top: 15px;
+            margin-top: 14px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Dashboard View Styles */
+        .dashboard-container h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 14px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .stat-card span {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: var(--success-color);
+            margin-top: 6px;
+        }
+
+        .logout-btn {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+            box-shadow: none;
+        }
+        .logout-btn:hover {
+            background-color: #cbd5e1;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- SIGN IN FORM -->
-    <div id="login-section">
-        <h2>Sign In</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="login-username">Username or Email</label>
-                <input type="text" id="login-username" autocomplete="off" required />
-            </div>
-            <div class="form-group">
-                <label for="login-password">Password</label>
-                <input type="password" id="login-password" autocomplete="new-password" required />
-            </div>
-            <button type="submit">Sign In</button>
-        </form>
-        <div class="toggle-link" onclick="toggleForms()">
-            Don't have an account? <span>Create Account</span>
+<div class="main-wrapper">
+    <div class="card">
+        <div class="brand-header">
+            <div class="logo-badge">P</div>
+            <h1>Payflow</h1>
+            <p>Next-Gen Transaction Platform</p>
         </div>
-    </div>
 
-    <!-- CREATE ACCOUNT FORM -->
-    <div id="register-section" class="hidden">
-        <h2>Create Account</h2>
-        <form id="registerForm">
-            <div class="form-group">
-                <label for="reg-username">Username</label>
-                <input type="text" id="reg-username" autocomplete="off" required />
+        <!-- SIGN IN SECTION -->
+        <div id="login-section">
+            <h2>Sign In</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="login-username">Username or Email</label>
+                    <input type="text" id="login-username" placeholder="johndoe" autocomplete="off" required />
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••" autocomplete="new-password" required />
+                </div>
+                <button type="submit">Access Portal</button>
+            </form>
+            <div class="toggle-link">
+                New to Payflow? <span onclick="switchView('register')">Create an account</span>
             </div>
-            <div class="form-group">
-                <label for="reg-email">Email</label>
-                <input type="email" id="reg-email" autocomplete="off" required />
-            </div>
-            <div class="form-group">
-                <label for="reg-password">Password</label>
-                <input type="password" id="reg-password" autocomplete="new-password" required />
-            </div>
-            <button type="submit">Register</button>
-        </form>
-        <div class="toggle-link" onclick="toggleForms()">
-            Already have an account? <span>Sign In</span>
         </div>
-    </div>
 
-    <div id="message"></div>
+        <!-- CREATE ACCOUNT SECTION -->
+        <div id="register-section" class="hidden">
+            <h2>Create Account</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" placeholder="johndoe" autocomplete="off" required />
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" placeholder="john@example.com" autocomplete="off" required />
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" placeholder="Min. 8 characters" autocomplete="new-password" required />
+                </div>
+                <button type="submit">Get Started</button>
+            </form>
+            <div class="toggle-link">
+                Already registered? <span onclick="switchView('login')">Sign In</span>
+            </div>
+        </div>
+
+        <!-- DASHBOARD VIEW (Shown post-login) -->
+        <div id="dashboard-section" class="hidden dashboard-container">
+            <h2>Welcome back, <span id="user-display" style="color: var(--primary);">User</span>!</h2>
+            <p style="color: var(--text-muted); font-size: 13px;">Your gateway status is operational.</p>
+
+            <div class="stat-card">
+                <span>Account Balance</span>
+                <h3>$24,580.00</h3>
+            </div>
+
+            <button class="logout-btn" onclick="switchView('login')">Sign Out</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
 </div>
 
 <script>
-    // ⚠️ REPLACE THIS WITH YOUR ACTUAL LIVE RENDER BACKEND URL
+    // ⚠️ REPLACE THIS WITH YOUR LIVE RENDER BACKEND URL
     const API_BASE_URL = "https://payflow-xxxx.onrender.com";
 
-    function toggleForms() {
-        const loginSection = document.getElementById('login-section');
-        const registerSection = document.getElementById('register-section');
-        loginSection.classList.toggle('hidden');
-        registerSection.classList.toggle('hidden');
+    function switchView(view) {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('register-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.add('hidden');
         document.getElementById('message').innerText = '';
+
+        if (view === 'login') {
+            document.getElementById('login-section').classList.remove('hidden');
+        } else if (view === 'register') {
+            document.getElementById('register-section').classList.remove('hidden');
+        } else if (view === 'dashboard') {
+            document.getElementById('dashboard-section').classList.remove('hidden');
+        }
     }
 
-    // Handle Sign In
+    // Handle Sign In Submission
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
         const msg = document.getElementById('message');
 
-        msg.style.color = '#333';
-        msg.innerText = 'Connecting to server...';
+        msg.style.color = 'var(--text-muted)';
+        msg.innerText = 'Authenticating securely...';
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -166,20 +331,19 @@
             });
 
             if (response.ok) {
-                msg.style.color = 'green';
-                msg.innerText = 'Login successful!';
+                document.getElementById('user-display').innerText = username;
+                switchView('dashboard');
             } else {
-                msg.style.color = 'red';
-                msg.innerText = 'Invalid username or password.';
+                msg.style.color = 'var(--error-color)';
+                msg.innerText = 'Invalid credentials provided.';
             }
         } catch (error) {
-            msg.style.color = 'red';
-            msg.innerText = 'Failed to fetch. Wake up Render or check URL.';
-            console.error(error);
+            msg.style.color = 'var(--error-color)';
+            msg.innerText = 'Failed to fetch. Check API URL or wake Render server.';
         }
     });
 
-    // Handle Registration
+    // Handle Registration Submission
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const username = document.getElementById('reg-username').value;
@@ -187,8 +351,8 @@
         const password = document.getElementById('reg-password').value;
         const msg = document.getElementById('message');
 
-        msg.style.color = '#333';
-        msg.innerText = 'Creating account...';
+        msg.style.color = 'var(--text-muted)';
+        msg.innerText = 'Creating account profile...';
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
@@ -198,17 +362,16 @@
             });
 
             if (response.ok) {
-                msg.style.color = 'green';
-                msg.innerText = 'Account created successfully! Please sign in.';
-                setTimeout(toggleForms, 2000);
+                msg.style.color = 'var(--success-color)';
+                msg.innerText = 'Account successfully registered! Redirecting...';
+                setTimeout(() => switchView('login'), 1500);
             } else {
-                msg.style.color = 'red';
-                msg.innerText = 'Registration failed.';
+                msg.style.color = 'var(--error-color)';
+                msg.innerText = 'Registration failed. Username or email may already exist.';
             }
         } catch (error) {
-            msg.style.color = 'red';
-            msg.innerText = 'Failed to fetch. Wake up Render or check URL.';
-            console.error(error);
+            msg.style.color = 'var(--error-color)';
+            msg.innerText = 'Failed to fetch. Check API URL or wake Render server.';
         }
     });
 </script>
