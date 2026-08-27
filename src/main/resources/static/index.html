@@ -1,699 +1,216 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payflow — Payment Portal</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            accent: '#06b6d4'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Payflow - Sign In & Register</title>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #050814; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .mesh-bg {
-            background-image:
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
-                radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 9999px; }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-bottom: 24px;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #007bff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+        .toggle-link span {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .hidden {
+            display: none;
+        }
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
-<body class="mesh-bg text-slate-100 min-h-screen selection:bg-brand-500 selection:text-white pb-12">
+<body>
 
-<!-- Toast Notifications Container -->
-<div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
-
-<!-- Navigation Bar -->
-<header class="sticky top-0 z-40 w-full border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-accent flex items-center justify-center shadow-lg shadow-brand-500/25">
-                <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+<div class="container">
+    <!-- SIGN IN FORM -->
+    <div id="login-section">
+        <h2>Sign In</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="login-username">Username or Email</label>
+                <input type="text" id="login-username" autocomplete="off" required />
             </div>
-            <div>
-                <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Payflow</span>
-                <span id="roleHeaderBadge" class="text-[10px] ml-2 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-bold">PORTAL</span>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" autocomplete="new-password" required />
             </div>
-        </div>
-
-        <!-- Profile & Logout Widget -->
-        <div id="userBadge" class="hidden flex items-center gap-3 pl-3 pr-1.5 py-1 rounded-full bg-slate-900 border border-white/10 text-xs">
-            <span class="text-slate-400">Welcome, <strong id="loggedUsername" class="text-slate-200"></strong></span>
-            <span id="loggedRoleBadge" class="px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 font-bold text-[10px]">CUSTOMER</span>
-            <button onclick="logout()" class="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-rose-400 transition" title="Sign out">
-                <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-            </button>
-        </div>
-    </div>
-</header>
-
-<main class="max-w-7xl mx-auto px-6 pt-8">
-
-    <!-- ==================== 1. AUTHENTICATION VIEW ==================== -->
-    <div id="authContainer" class="max-w-md mx-auto my-12 transition-all">
-        <div class="glass-panel p-8 rounded-3xl shadow-2xl relative overflow-hidden">
-            <div class="text-center mb-6">
-                <div class="inline-flex p-3 rounded-2xl bg-white/5 border border-white/10 mb-3 text-brand-accent">
-                    <i data-lucide="lock" class="w-7 h-7"></i>
-                </div>
-                <h2 class="text-2xl font-bold tracking-tight">Sign In to Payflow</h2>
-                <p class="text-xs text-slate-400 mt-1">Access your payment wallet or administrative dashboard</p>
-            </div>
-
-            <!-- Mode Tabs -->
-            <div class="grid grid-cols-2 p-1 bg-slate-900 rounded-xl border border-white/5 mb-6 text-xs font-semibold">
-                <button id="tabLogin" onclick="switchAuthTab('login')" class="py-2.5 rounded-lg bg-brand-600 text-white shadow transition">Sign In</button>
-                <button id="tabRegister" onclick="switchAuthTab('register')" class="py-2.5 rounded-lg text-slate-400 hover:text-white transition">Create Account</button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Username</label>
-                    <input id="authUsername" type="text" placeholder="Enter username" value="pooja_dev"
-                           class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-slate-200" />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Password</label>
-                    <input id="authPassword" type="password" placeholder="••••••••••••" value="securePassword123"
-                           class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-slate-200" />
-                </div>
-
-                <!-- Role Selector (Only during sign up) -->
-                <div id="roleSelectorGroup" class="hidden">
-                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Select Account Profile</label>
-                    <select id="authRoleSelect" class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
-                        <option value="CUSTOMER">Standard Customer (Simple Checkout View)</option>
-                        <option value="ADMIN">System Admin (PostgreSQL & API Ledger)</option>
-                    </select>
-                </div>
-
-                <button id="btnAuthSubmit" onclick="handleAuthSubmit()"
-                        class="w-full py-3 bg-gradient-to-r from-brand-600 to-brand-accent hover:from-brand-500 hover:to-cyan-400 text-white font-semibold text-sm rounded-xl shadow-lg shadow-brand-500/20 transition flex items-center justify-center gap-2">
-                    <span>Sign In</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </button>
-            </div>
+            <button type="submit">Sign In</button>
+        </form>
+        <div class="toggle-link" onclick="toggleForms()">
+            Don't have an account? <span>Create Account</span>
         </div>
     </div>
 
-    <!-- ==================== 2. CUSTOMER VIEW (Zero Technical Jargon) ==================== -->
-    <div id="customerDashboard" class="hidden space-y-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-            <!-- Payment Checkout Card -->
-            <div class="lg:col-span-7 space-y-6">
-                <div class="glass-panel p-7 rounded-3xl relative">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                                <i data-lucide="wallet" class="w-5 h-5 text-indigo-400"></i>
-                                Quick Transfer & Payment
-                            </h3>
-                            <p class="text-xs text-slate-400">Fast, encrypted payment checkout</p>
-                        </div>
-                        <span class="text-xs font-medium px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                Secure Gateway
-                            </span>
-                    </div>
-
-                    <!-- User-Friendly Virtual Payment Card -->
-                    <div class="w-full h-48 rounded-2xl p-6 bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 border border-indigo-500/30 shadow-2xl mb-6 relative overflow-hidden flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/10">
-                                    <i data-lucide="shield" class="w-4 h-4 text-indigo-300"></i>
-                                </div>
-                                <span class="text-xs font-bold tracking-wider uppercase text-slate-300">PAYFLOW CARD</span>
-                            </div>
-                            <span id="userMethodBadge" class="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white font-semibold text-xs">
-                                    UPI Instant
-                                </span>
-                        </div>
-
-                        <div>
-                            <p class="text-[11px] text-indigo-200 tracking-wider font-medium">AMOUNT TO PAY</p>
-                            <p id="userCardAmount" class="text-3xl font-extrabold text-white">₹750.00</p>
-                        </div>
-
-                        <div class="flex justify-between items-end text-xs">
-                            <div>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Cardholder</span>
-                                <span id="userCardHolder" class="font-bold text-slate-100">pooja_dev</span>
-                            </div>
-                            <span class="text-slate-400 text-xs flex items-center gap-1">
-                                    <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-400"></i> Encrypted Checkout
-                                </span>
-                        </div>
-                    </div>
-
-                    <!-- Form Input Fields -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Payment Method</label>
-                            <select id="userPayMethod" onchange="syncCustomerMethod(this.value)"
-                                    class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
-                                <option value="UpiPayment">UPI (Google Pay / PhonePe / Paytm)</option>
-                                <option value="CreditcardPayment">Debit / Credit Card</option>
-                                <option value="WalletPayment">Payflow Digital Wallet</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Amount</label>
-                            <div class="relative">
-                                <span class="absolute left-3.5 top-2.5 text-slate-400 font-bold">₹</span>
-                                <input id="userPayAmount" type="number" step="0.01" value="750.00" oninput="syncCustomerAmount(this.value)"
-                                       class="w-full pl-8 pr-4 py-2.5 bg-slate-900 border border-white/10 rounded-xl text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500" />
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Email Address for Receipt</label>
-                            <input id="userPayEmail" type="email" placeholder="youremail@gmail.com"
-                                   class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-brand-500" />
-                            <p class="text-[11px] text-slate-400 mt-1">A payment confirmation receipt will be sent to this email address.</p>
-                        </div>
-                    </div>
-
-                    <input type="hidden" id="userCustId" value="1">
-                    <input type="hidden" id="userNotifyType" value="emailNotification">
-
-                    <button onclick="handleCustomerPayment()"
-                            class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm tracking-wide shadow-xl shadow-emerald-500/20 transition flex items-center justify-center gap-2">
-                        <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        <span>PAY NOW</span>
-                    </button>
-                </div>
+    <!-- CREATE ACCOUNT FORM -->
+    <div id="register-section" class="hidden">
+        <h2>Create Account</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="reg-username">Username</label>
+                <input type="text" id="reg-username" autocomplete="off" required />
             </div>
-
-            <!-- Customer Recent Payments -->
-            <div class="lg:col-span-5 space-y-6">
-                <div class="glass-panel p-6 rounded-3xl flex flex-col h-[500px]">
-                    <div class="flex items-center justify-between pb-4 border-b border-white/5 mb-4">
-                        <div>
-                            <h4 class="text-sm font-bold text-white flex items-center gap-2">
-                                <i data-lucide="clock" class="w-4 h-4 text-brand-accent"></i>
-                                Recent Payment History
-                            </h4>
-                            <p class="text-[11px] text-slate-400">Your completed transactions</p>
-                        </div>
-                        <button onclick="loadTransactions()" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition" title="Refresh">
-                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                    <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="userTxList">
-                        <div class="text-center py-12 text-xs text-slate-500">Loading your transactions...</div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="reg-email">Email</label>
+                <input type="email" id="reg-email" autocomplete="off" required />
             </div>
-
+            <div class="form-group">
+                <label for="reg-password">Password</label>
+                <input type="password" id="reg-password" autocomplete="new-password" required />
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <div class="toggle-link" onclick="toggleForms()">
+            Already have an account? <span>Sign In</span>
         </div>
     </div>
 
-    <!-- ==================== 3. ADMIN VIEW (Engineering & PostgreSQL Control) ==================== -->
-    <div id="adminDashboard" class="hidden space-y-8">
-        <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-                <div class="p-2 rounded-lg bg-brand-500/10 border border-brand-500/20 text-brand-500">
-                    <i data-lucide="terminal" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-white font-mono">SYSTEM ADMINISTRATOR CONSOLE</h3>
-                    <p class="text-xs text-slate-400">PostgreSQL Schema Engine &bull; Hibernate Transactions &bull; JWT Validation</p>
-                </div>
-            </div>
-            <div class="flex gap-2 text-xs font-mono">
-                <span class="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-emerald-400">DB: payflowdb</span>
-                <span class="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-cyan-400">PORT: 5432</span>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-            <!-- Admin Terminal (7 Cols) -->
-            <div class="lg:col-span-7 space-y-6">
-                <div class="glass-panel p-7 rounded-3xl relative">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-base font-bold text-white font-mono flex items-center gap-2">
-                                <i data-lucide="cpu" class="w-5 h-5 text-brand-accent"></i>
-                                Direct API Dispatcher
-                            </h3>
-                            <p class="text-xs text-slate-400">Executes Spring Controller endpoints and persists to PostgreSQL</p>
-                        </div>
-                        <span class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-slate-300">
-                                POST /api/v1/payments/process
-                            </span>
-                    </div>
-
-                    <!-- Technical Admin Preview Card -->
-                    <div class="w-full h-48 rounded-2xl p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/30 shadow-2xl mb-6 relative overflow-hidden font-mono flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-bold tracking-widest text-cyan-400">POSTGRESQL SYNC NODE</span>
-                            <span id="adminMethodBadge" class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-xs font-bold">
-                                    UpiPayment
-                                </span>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-widest">TRANSACTION PAYLOAD AMOUNT</p>
-                            <p id="adminCardAmount" class="text-3xl font-extrabold text-white">₹750.00</p>
-                        </div>
-                        <div class="flex justify-between items-end text-xs text-slate-400">
-                            <div>
-                                <span class="text-[9px] uppercase block text-slate-500">Principal Customer</span>
-                                <span id="adminCardHolder" class="font-bold text-slate-200">pooja_dev</span>
-                            </div>
-                            <span class="text-emerald-400 text-[11px]">RELATIONAL PERSISTENCE: ON</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 font-mono text-xs">
-                        <div>
-                            <label class="block font-medium text-slate-300 mb-1.5">Customer Database ID</label>
-                            <input id="adminCustId" type="number" value="1"
-                                   class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-brand-500" />
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-300 mb-1.5">Amount (INR)</label>
-                            <input id="adminPayAmount" type="number" step="0.01" value="750.00" oninput="syncAdminAmount(this.value)"
-                                   class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-xl font-bold text-emerald-400 focus:outline-none focus:border-emerald-500" />
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-300 mb-1.5">Payment Strategy</label>
-                            <select id="adminPayMethod" onchange="syncAdminMethod(this.value)"
-                                    class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brand-500">
-                                <option value="UpiPayment">UpiPayment (UPI / VPA)</option>
-                                <option value="CreditcardPayment">CreditcardPayment (Card 3DS)</option>
-                                <option value="WalletPayment">WalletPayment (Internal Wallet)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-300 mb-1.5">Notification Channel</label>
-                            <select id="adminNotifyType"
-                                    class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brand-500">
-                                <option value="emailNotification">emailNotification (SMTP Dispatch)</option>
-                                <option value="smsNotification">smsNotification (Cellular Alert)</option>
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label class="block font-medium text-slate-300 mb-1.5">Recipient Email for SMTP Ping</label>
-                            <input id="adminPayEmail" type="email" placeholder="admin_test@domain.com"
-                                   class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-brand-500" />
-                        </div>
-                    </div>
-
-                    <button onclick="handleAdminPayment()"
-                            class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 via-brand-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-sm font-mono tracking-wide shadow-xl shadow-brand-500/20 transition flex items-center justify-center gap-2">
-                        <i data-lucide="database" class="w-5 h-5"></i>
-                        <span>EXECUTE & PERSIST TO POSTGRESQL</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Admin Live Ledger & JSON Console (5 Cols) -->
-            <div class="lg:col-span-5 space-y-6">
-                <!-- JSON Console -->
-                <div class="glass-panel p-6 rounded-3xl flex flex-col h-[260px]">
-                    <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
-                            <span class="text-xs font-mono font-bold text-slate-300 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-brand-accent"></span>
-                                REST RESPONSE PAYLOAD
-                            </span>
-                        <span id="httpStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">STANDBY</span>
-                    </div>
-                    <div class="flex-1 overflow-auto bg-slate-950 rounded-xl p-3 border border-white/5 font-mono text-[11px]">
-                        <pre id="apiConsoleOutput" class="text-emerald-400 whitespace-pre-wrap">// Waiting for execution trigger...</pre>
-                    </div>
-                </div>
-
-                <!-- PostgreSQL Ledger -->
-                <div class="glass-panel p-6 rounded-3xl flex flex-col h-[320px]">
-                    <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
-                            <span class="text-xs font-mono font-bold text-slate-200 flex items-center gap-2">
-                                <i data-lucide="table" class="w-4 h-4 text-cyan-400"></i>
-                                PostgreSQL Live Table: transactions
-                            </span>
-                        <button onclick="loadTransactions()" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition" title="Refresh Ledger">
-                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                    <div class="flex-1 overflow-y-auto space-y-2 pr-1 font-mono" id="adminTxList">
-                        <div class="text-center py-10 text-xs text-slate-500">Querying transactions table...</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-</main>
+    <div id="message"></div>
+</div>
 
 <script>
-    const API_BASE = "http://localhost:8081/api/v1";
-    let currentAuthMode = 'login';
-    let authToken = localStorage.getItem('jwt_token') || null;
-    let authUser = localStorage.getItem('jwt_user') || 'pooja_dev';
-    let authRole = localStorage.getItem('jwt_role') || 'ROLE_CUSTOMER';
+    // ⚠️ REPLACE THIS WITH YOUR ACTUAL LIVE RENDER BACKEND URL
+    const API_BASE_URL = "https://payflow-xxxx.onrender.com";
 
-    document.addEventListener('DOMContentLoaded', () => {
-        lucide.createIcons();
-        initApp();
-    });
-
-    function initApp() {
-        if (authToken) {
-            document.getElementById('authContainer').classList.add('hidden');
-            document.getElementById('userBadge').classList.remove('hidden');
-            document.getElementById('loggedUsername').textContent = authUser;
-            document.getElementById('loggedRoleBadge').textContent = authRole.replace('ROLE_', '');
-
-            if (authRole.includes('ADMIN')) {
-                document.getElementById('customerDashboard').classList.add('hidden');
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                document.getElementById('roleHeaderBadge').textContent = "ADMIN CONSOLE";
-                document.getElementById('adminCardHolder').textContent = authUser;
-            } else {
-                document.getElementById('adminDashboard').classList.add('hidden');
-                document.getElementById('customerDashboard').classList.remove('hidden');
-                document.getElementById('roleHeaderBadge').textContent = "CUSTOMER PORTAL";
-                document.getElementById('userCardHolder').textContent = authUser;
-            }
-            loadTransactions();
-        } else {
-            document.getElementById('authContainer').classList.remove('hidden');
-            document.getElementById('customerDashboard').classList.add('hidden');
-            document.getElementById('adminDashboard').classList.add('hidden');
-            document.getElementById('userBadge').classList.add('hidden');
-        }
-        lucide.createIcons();
+    function toggleForms() {
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        loginSection.classList.toggle('hidden');
+        registerSection.classList.toggle('hidden');
+        document.getElementById('message').innerText = '';
     }
 
-    function switchAuthTab(mode) {
-        currentAuthMode = mode;
-        const tabLogin = document.getElementById('tabLogin');
-        const tabReg = document.getElementById('tabRegister');
-        const roleGroup = document.getElementById('roleSelectorGroup');
-        const btn = document.getElementById('btnAuthSubmit');
+    // Handle Sign In
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const msg = document.getElementById('message');
 
-        if (mode === 'login') {
-            tabLogin.className = "py-2.5 rounded-lg bg-brand-600 text-white shadow transition";
-            tabReg.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
-            roleGroup.classList.add('hidden');
-            btn.innerHTML = `<span>Sign In</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-        } else {
-            tabReg.className = "py-2.5 rounded-lg bg-brand-600 text-white shadow transition";
-            tabLogin.className = "py-2.5 rounded-lg text-slate-400 hover:text-white transition";
-            roleGroup.classList.remove('hidden');
-            btn.innerHTML = `<span>Create Account</span> <i data-lucide="user-plus" class="w-4 h-4"></i>`;
-        }
-        lucide.createIcons();
-    }
-
-    // Customer Synchronizations
-    function syncCustomerAmount(val) {
-        document.getElementById('userCardAmount').textContent = val ? `₹${parseFloat(val).toFixed(2)}` : '₹0.00';
-    }
-
-    function syncCustomerMethod(val) {
-        const badge = document.getElementById('userMethodBadge');
-        if (val === 'UpiPayment') badge.textContent = 'UPI Instant';
-        else if (val === 'CreditcardPayment') badge.textContent = 'Credit / Debit Card';
-        else if (val === 'WalletPayment') badge.textContent = 'Wallet Balance';
-    }
-
-    // Admin Synchronizations
-    function syncAdminAmount(val) {
-        document.getElementById('adminCardAmount').textContent = val ? `₹${parseFloat(val).toFixed(2)}` : '₹0.00';
-    }
-
-    function syncAdminMethod(val) {
-        document.getElementById('adminMethodBadge').textContent = val;
-    }
-
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        const colorClass = type === 'success' ? 'border-emerald-500 bg-slate-900/95 text-emerald-400' : 'border-rose-500 bg-slate-900/95 text-rose-400';
-        toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-xl text-xs font-semibold ${colorClass}`;
-        toast.innerHTML = `<span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3500);
-    }
-
-    async function handleAuthSubmit() {
-        const username = document.getElementById('authUsername').value.trim();
-        const password = document.getElementById('authPassword').value.trim();
-        const role = document.getElementById('authRoleSelect').value;
-
-        if (!username || !password) {
-            showToast('Please enter both username and password', 'error');
-            return;
-        }
-
-        const endpoint = currentAuthMode === 'login' ? '/auth/login' : '/auth/register';
-        const payload = currentAuthMode === 'login' ? { username, password } : { username, password, role };
+        msg.style.color = '#333';
+        msg.innerText = 'Connecting to server...';
 
         try {
-            const res = await fetch(`${API_BASE}${endpoint}`, {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ username, password })
             });
 
-            const rawText = await res.text();
-            let data;
-            try {
-                data = JSON.parse(rawText);
-            } catch {
-                data = { message: rawText };
-            }
-
-            if (!res.ok) {
-                throw new Error(data.message || 'Authentication failed');
-            }
-
-            if (currentAuthMode === 'register') {
-                showToast(`Account created as ${role}! Please sign in.`, 'success');
-                switchAuthTab('login');
+            if (response.ok) {
+                msg.style.color = 'green';
+                msg.innerText = 'Login successful!';
             } else {
-                authToken = data.token;
-                authUser = data.username;
-                authRole = data.role;
-
-                localStorage.setItem('jwt_token', authToken);
-                localStorage.setItem('jwt_user', authUser);
-                localStorage.setItem('jwt_role', authRole);
-
-                showToast(`Welcome back, ${authUser}!`, 'success');
-                initApp();
+                msg.style.color = 'red';
+                msg.innerText = 'Invalid username or password.';
             }
-        } catch (err) {
-            showToast(err.message, 'error');
+        } catch (error) {
+            msg.style.color = 'red';
+            msg.innerText = 'Failed to fetch. Wake up Render or check URL.';
+            console.error(error);
         }
-    }
+    });
 
-    function logout() {
-        localStorage.clear();
-        authToken = null;
-        showToast('Signed out successfully', 'success');
-        initApp();
-    }
+    // Handle Registration
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('reg-username').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const msg = document.getElementById('message');
 
-    async function handleCustomerPayment() {
-        const emailInput = document.getElementById('userPayEmail').value.trim();
-        if (!emailInput) {
-            showToast('Please enter your email address for the receipt!', 'error');
-            return;
-        }
-
-        const payload = {
-            customerId: parseInt(document.getElementById('userCustId').value),
-            username: authUser,
-            paymentMethod: document.getElementById('userPayMethod').value,
-            notificationType: document.getElementById('userNotifyType').value,
-            amount: parseFloat(document.getElementById('userPayAmount').value),
-            recipientEmail: emailInput
-        };
-
-        await executeTransaction(payload);
-    }
-
-    async function handleAdminPayment() {
-        const emailInput = document.getElementById('adminPayEmail').value.trim();
-        const payload = {
-            customerId: parseInt(document.getElementById('adminCustId').value),
-            username: authUser,
-            paymentMethod: document.getElementById('adminPayMethod').value,
-            notificationType: document.getElementById('adminNotifyType').value,
-            amount: parseFloat(document.getElementById('adminPayAmount').value),
-            recipientEmail: emailInput
-        };
-
-        await executeTransaction(payload);
-    }
-
-    async function executeTransaction(payload) {
-        const consoleBox = document.getElementById('apiConsoleOutput');
-        const statusBadge = document.getElementById('httpStatusBadge');
-        if (statusBadge) statusBadge.textContent = "WRITING TO DB...";
+        msg.style.color = '#333';
+        msg.innerText = 'Creating account...';
 
         try {
-            const res = await fetch(`${API_BASE}/payments/process`, {
+            const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                },
-                body: JSON.stringify(payload)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
             });
 
-            const rawText = await res.text();
-            let data;
-            try {
-                data = JSON.parse(rawText);
-            } catch {
-                data = { rawResponse: rawText };
-            }
-
-            if (consoleBox) consoleBox.textContent = JSON.stringify(data, null, 2);
-
-            if (res.ok) {
-                if (statusBadge) statusBadge.textContent = "200 SUCCESS";
-                showToast(`Payment of ₹${payload.amount} was successful!`, 'success');
-                loadTransactions();
+            if (response.ok) {
+                msg.style.color = 'green';
+                msg.innerText = 'Account created successfully! Please sign in.';
+                setTimeout(toggleForms, 2000);
             } else {
-                if (statusBadge) statusBadge.textContent = `${res.status} REJECTED`;
-                showToast(data.message || 'Payment execution rejected', 'error');
+                msg.style.color = 'red';
+                msg.innerText = 'Registration failed.';
             }
-        } catch (err) {
-            if (consoleBox) consoleBox.textContent = err.message;
-            if (statusBadge) statusBadge.textContent = "NET_ERROR";
-            showToast(err.message, 'error');
+        } catch (error) {
+            msg.style.color = 'red';
+            msg.innerText = 'Failed to fetch. Wake up Render or check URL.';
+            console.error(error);
         }
-    }
-
-    async function loadTransactions() {
-        const userList = document.getElementById('userTxList');
-        const adminList = document.getElementById('adminTxList');
-
-        try {
-            const res = await fetch(`${API_BASE}/payments/transactions`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-
-            if (!res.ok) {
-                if (userList) userList.innerHTML = `<div class="text-center py-10 text-xs text-slate-500">No payment records found.</div>`;
-                if (adminList) adminList.innerHTML = `<div class="text-center py-10 text-xs text-slate-500">0 rows returned from transactions table.</div>`;
-                return;
-            }
-
-            const rawText = await res.text();
-            let data;
-            try {
-                data = JSON.parse(rawText);
-            } catch (e) {
-                return;
-            }
-
-            if (Array.isArray(data) && data.length > 0) {
-                const recent = data.slice(-8).reverse();
-
-                // Render Customer list (friendly UI)
-                if (userList) {
-                    userList.innerHTML = '';
-                    recent.forEach(t => {
-                        let methodLabel = "Payment";
-                        const m = t.paymentMethod?.type || t.paymentMethod || '';
-                        if (m.includes('Upi')) methodLabel = 'UPI Transfer';
-                        else if (m.includes('Credit')) methodLabel = 'Card Payment';
-                        else if (m.includes('Wallet')) methodLabel = 'Wallet';
-
-                        const item = document.createElement('div');
-                        item.className = "flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/90 border border-white/5";
-                        item.innerHTML = `
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-                                    <i data-lucide="check" class="w-4 h-4"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-bold text-white">${methodLabel}</div>
-                                    <div class="text-[10px] text-slate-400">${t.createdAt ? String(t.createdAt).substring(0, 16).replace('T', ' ') : 'Completed'}</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-xs font-extrabold text-emerald-400">₹${parseFloat(t.amount).toFixed(2)}</div>
-                                <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold">Successful</span>
-                            </div>
-                        `;
-                        userList.appendChild(item);
-                    });
-                }
-
-                // Render Admin list (PostgreSQL columns)
-                if (adminList) {
-                    adminList.innerHTML = '';
-                    recent.forEach(t => {
-                        const methodDisplay = t.paymentMethod?.type || t.paymentMethod || 'PAYMENT_METHOD';
-                        const item = document.createElement('div');
-                        item.className = "flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-white/5 text-xs";
-                        item.innerHTML = `
-                            <div>
-                                <div class="font-bold text-white">ROW ID: ${t.id} &bull; ${methodDisplay}</div>
-                                <div class="text-[10px] text-slate-400">TIMESTAMP: ${t.createdAt ? String(t.createdAt).substring(0, 19).replace('T', ' ') : 'N/A'}</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="font-bold text-emerald-400">₹${parseFloat(t.amount).toFixed(2)}</div>
-                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">${t.status}</span>
-                            </div>
-                        `;
-                        adminList.appendChild(item);
-                    });
-                }
-            } else {
-                if (userList) userList.innerHTML = `<div class="text-center py-10 text-xs text-slate-500">No payment history yet.</div>`;
-                if (adminList) adminList.innerHTML = `<div class="text-center py-10 text-xs text-slate-500">Table empty. 0 rows returned.</div>`;
-            }
-        } catch (err) {
-            console.error(err);
-        }
-        lucide.createIcons();
-    }
+    });
 </script>
 </body>
 </html>
