@@ -1,379 +1,766 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payflow - Enterprise Payment Gateway</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Payflow — Payment Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+          darkMode: 'class',
+          theme: {
+            extend: {
+              colors: { brand: { 500:'#6366f1',600:'#4f46e5', accent:'#06b6d4' } },
+              fontFamily: {
+                sans: ['Plus Jakarta Sans','system-ui','sans-serif'],
+                mono: ['JetBrains Mono','monospace']
+              }
+            }
+          }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-gradient: radial-gradient(circle at top left, #312e81, #1e1b4b, #0f172a);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --error-color: #ef4444;
-            --success-color: #10b981;
+        body{font-family:'Plus Jakarta Sans',sans-serif;background-color:#050814;}
+        .font-mono{font-family:'JetBrains Mono',monospace;}
+        .glass-panel{background:rgba(15,23,42,.75);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);}
+        .mesh-bg{
+          background-image:
+            radial-gradient(at 0% 0%, rgba(99,102,241,.15) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(6,182,212,.12) 0px, transparent 50%),
+            radial-gradient(at 50% 100%, rgba(139,92,246,.1) 0px, transparent 50%);
         }
+        ::-webkit-scrollbar{width:6px;}
+        ::-webkit-scrollbar-track{background:transparent;}
+        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:9999px;}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+        .field-err{border-color:#f43f5e !important;}
+        .skeleton{
+          background:linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.08) 37%, rgba(255,255,255,.04) 63%);
+          background-size:400% 100%;
+          animation:shimmer 1.4s ease infinite;
         }
+        @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
 
-        body {
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
+        .conn-dot{width:7px;height:7px;border-radius:50%;position:relative;flex-shrink:0;}
+        .conn-dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1.5px solid currentColor;opacity:0;}
+        .conn-connecting .conn-dot{background:#eab308;color:#eab308;}
+        .conn-connecting .conn-dot::after{opacity:.5;animation:ring 1.3s ease-out infinite;}
+        .conn-ok .conn-dot{background:#10b981;}
+        .conn-error .conn-dot{background:#f43f5e;color:#f43f5e;}
+        .conn-error .conn-dot::after{opacity:.5;animation:ring 1.3s ease-out infinite;}
+        @keyframes ring{0%{transform:scale(.6);opacity:.6;}100%{transform:scale(2.4);opacity:0;}}
 
-        /* Ambient Glow Effect */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: rgba(99, 102, 241, 0.15);
-            filter: blur(100px);
-            border-radius: 50%;
-            z-index: -1;
-        }
-
-        .main-wrapper {
-            width: 100%;
-            max-width: 440px;
-            padding: 20px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .brand-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            background: var(--primary);
-            color: white;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 20px;
-            margin-bottom: 12px;
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
-        }
-
-        .brand-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
-
-        .brand-header p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-main);
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--text-main);
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s ease;
-            background-color: #f8fafc;
-            color: var(--text-main);
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .toggle-link {
-            text-align: center;
-            margin-top: 22px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .toggle-link span {
-            color: var(--primary);
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .toggle-link span:hover {
-            text-decoration: underline;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        #message {
-            margin-top: 14px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        /* Dashboard View Styles */
-        .dashboard-container h2 {
-            font-size: 22px;
-            margin-bottom: 8px;
-        }
-
-        .stat-card {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 14px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .stat-card span {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .stat-card h3 {
-            font-size: 28px;
-            color: var(--success-color);
-            margin-top: 6px;
-        }
-
-        .logout-btn {
-            background-color: #e2e8f0;
-            color: var(--text-main);
-            box-shadow: none;
-        }
-        .logout-btn:hover {
-            background-color: #cbd5e1;
-        }
+        @media (prefers-reduced-motion: reduce){ .skeleton, .conn-dot::after{animation:none;} }
     </style>
 </head>
-<body>
+<body class="mesh-bg text-slate-100 min-h-screen selection:bg-brand-500 selection:text-white pb-12">
 
-<div class="main-wrapper">
-    <div class="card">
-        <div class="brand-header">
-            <div class="logo-badge">P</div>
-            <h1>Payflow</h1>
-            <p>Next-Gen Transaction Platform</p>
-        </div>
+<div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
 
-        <!-- SIGN IN SECTION -->
-        <div id="login-section">
-            <h2>Sign In</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="login-username">Username or Email</label>
-                    <input type="text" id="login-username" placeholder="johndoe" autocomplete="off" required />
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="••••••••" autocomplete="new-password" required />
-                </div>
-                <button type="submit">Access Portal</button>
-            </form>
-            <div class="toggle-link">
-                New to Payflow? <span onclick="switchView('register')">Create an account</span>
+<header class="sticky top-0 z-40 w-full border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-accent flex items-center justify-center shadow-lg shadow-brand-500/25">
+                <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Payflow</span>
+                <span id="roleHeaderBadge" class="text-[10px] ml-2 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-bold">PORTAL</span>
             </div>
         </div>
 
-        <!-- CREATE ACCOUNT SECTION -->
-        <div id="register-section" class="hidden">
-            <h2>Create Account</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="reg-username">Username</label>
-                    <input type="text" id="reg-username" placeholder="johndoe" autocomplete="off" required />
-                </div>
-                <div class="form-group">
-                    <label for="reg-email">Email Address</label>
-                    <input type="email" id="reg-email" placeholder="john@example.com" autocomplete="off" required />
-                </div>
-                <div class="form-group">
-                    <label for="reg-password">Password</label>
-                    <input type="password" id="reg-password" placeholder="Min. 8 characters" autocomplete="new-password" required />
-                </div>
-                <button type="submit">Get Started</button>
-            </form>
-            <div class="toggle-link">
-                Already registered? <span onclick="switchView('login')">Sign In</span>
-            </div>
-        </div>
-
-        <!-- DASHBOARD VIEW (Shown post-login) -->
-        <div id="dashboard-section" class="hidden dashboard-container">
-            <h2>Welcome back, <span id="user-display" style="color: var(--primary);">User</span>!</h2>
-            <p style="color: var(--text-muted); font-size: 13px;">Your gateway status is operational.</p>
-
-            <div class="stat-card">
-                <span>Account Balance</span>
-                <h3>$24,580.00</h3>
+        <div class="flex items-center gap-3">
+            <!-- Live connection indicator -->
+            <div id="connIndicator" class="conn-connecting hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-white/10 text-[11px] text-slate-400">
+                <span class="conn-dot"></span>
+                <span id="connText">Connecting…</span>
             </div>
 
-            <button class="logout-btn" onclick="switchView('login')">Sign Out</button>
+            <div id="userBadge" class="hidden items-center gap-3 pl-3 pr-1.5 py-1 rounded-full bg-slate-900 border border-white/10 text-xs">
+                <span class="text-slate-400">Welcome, <strong id="loggedUsername" class="text-slate-200"></strong></span>
+                <span id="loggedRoleBadge" class="px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 font-bold text-[10px]">CUSTOMER</span>
+                <button onclick="logout()" class="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-rose-400 transition" title="Sign out">
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
         </div>
-
-        <div id="message"></div>
     </div>
-</div>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 pt-8">
+
+    <!-- ==================== AUTH VIEW ==================== -->
+    <div id="authContainer" class="max-w-md mx-auto my-12 transition-all">
+        <div class="glass-panel p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+            <div class="text-center mb-6">
+                <div class="inline-flex p-3 rounded-2xl bg-white/5 border border-white/10 mb-3 text-brand-accent">
+                    <i data-lucide="lock" class="w-7 h-7"></i>
+                </div>
+                <h2 class="text-2xl font-bold tracking-tight">Sign In to Payflow</h2>
+                <p class="text-xs text-slate-400 mt-1">Access your payment wallet or administrative dashboard</p>
+            </div>
+
+            <div class="grid grid-cols-2 p-1 bg-slate-900 rounded-xl border border-white/5 mb-6 text-xs font-semibold">
+                <button id="tabLogin" onclick="switchAuthTab('login')" class="py-2.5 rounded-lg bg-brand-600 text-white shadow transition">Sign In</button>
+                <button id="tabRegister" onclick="switchAuthTab('register')" class="py-2.5 rounded-lg text-slate-400 hover:text-white transition">Create Account</button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Username</label>
+                    <input id="authUsername" type="text" placeholder="Enter username" autocomplete="username"
+                           class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-slate-200" />
+                </div>
+
+                <div id="authEmailGroup" class="hidden">
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Email address</label>
+                    <input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email"
+                           class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-slate-200" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Password</label>
+                    <input id="authPassword" type="password" placeholder="••••••••••••" autocomplete="current-password"
+                           class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-slate-200" />
+                    <p id="authPassHint" class="hidden text-[11px] text-slate-500 mt-1">Use at least 8 characters.</p>
+                </div>
+
+                <!-- Role selector: cosmetic only — backend always registers as CUSTOMER.
+                     Wire this up server-side (AuthController) if you need real admin signup. -->
+                <div id="roleSelectorGroup" class="hidden">
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Select account profile</label>
+                    <select id="authRoleSelect" class="w-full px-4 py-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="CUSTOMER">Standard Customer (checkout view)</option>
+                        <option value="ADMIN">System Admin (requires backend support)</option>
+                    </select>
+                    <p class="text-[11px] text-slate-500 mt-1">Admin accounts must currently be granted by a database administrator.</p>
+                </div>
+
+                <button id="btnAuthSubmit" onclick="handleAuthSubmit()"
+                        class="w-full py-3 bg-gradient-to-r from-brand-600 to-brand-accent hover:from-brand-500 hover:to-cyan-400 text-white font-semibold text-sm rounded-xl shadow-lg shadow-brand-500/20 transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <span id="authBtnSpinner" class="hidden w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                    <span id="authBtnLabel">Sign In</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4" id="authBtnIcon"></i>
+                </button>
+
+                <p id="authInlineError" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CUSTOMER VIEW ==================== -->
+    <div id="customerDashboard" class="hidden space-y-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="glass-panel p-7 rounded-3xl relative">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i data-lucide="wallet" class="w-5 h-5 text-indigo-400"></i>
+                                Quick Transfer & Payment
+                            </h3>
+                            <p class="text-xs text-slate-400">Fast, encrypted payment checkout</p>
+                        </div>
+                        <span class="text-xs font-medium px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Secure Gateway
+            </span>
+                    </div>
+
+                    <div class="w-full h-48 rounded-2xl p-6 bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 border border-indigo-500/30 shadow-2xl mb-6 relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/10">
+                                    <i data-lucide="shield" class="w-4 h-4 text-indigo-300"></i>
+                                </div>
+                                <span class="text-xs font-bold tracking-wider uppercase text-slate-300">PAYFLOW CARD</span>
+                            </div>
+                            <span id="userMethodBadge" class="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white font-semibold text-xs">UPI Instant</span>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-indigo-200 tracking-wider font-medium">AMOUNT TO PAY</p>
+                            <p id="userCardAmount" class="text-3xl font-extrabold text-white">₹0.00</p>
+                        </div>
+                        <div class="flex justify-between items-end text-xs">
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Cardholder</span>
+                                <span id="userCardHolder" class="font-bold text-slate-100">—</span>
+                            </div>
+                            <span class="text-slate-400 text-xs flex items-center gap-1">
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-400"></i> Encrypted Checkout
+              </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Payment method</label>
+                            <select id="userPayMethod" onchange="syncCustomerMethod(this.value)"
+                                    class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="UpiPayment">UPI (Google Pay / PhonePe / Paytm)</option>
+                                <option value="CreditcardPayment">Debit / Credit Card</option>
+                                <option value="WalletPayment">Payflow Digital Wallet</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Amount</label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-2.5 text-slate-400 font-bold">₹</span>
+                                <input id="userPayAmount" type="number" step="0.01" min="0" placeholder="0.00" oninput="syncCustomerAmount(this.value)"
+                                       class="w-full pl-8 pr-4 py-2.5 bg-slate-900 border border-white/10 rounded-xl text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500" />
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Email address for receipt</label>
+                            <input id="userPayEmail" type="email" placeholder="youremail@example.com"
+                                   class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-brand-500" />
+                            <p class="text-[11px] text-slate-400 mt-1">A payment confirmation receipt will be sent to this email address.</p>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="userCustId" value="1">
+                    <input type="hidden" id="userNotifyType" value="emailNotification">
+
+                    <button id="btnCustomerPay" onclick="handleCustomerPayment()"
+                            class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm tracking-wide shadow-xl shadow-emerald-500/20 transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                        <span id="custPaySpinner" class="hidden w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                        <i data-lucide="check-circle" class="w-5 h-5" id="custPayIcon"></i>
+                        <span id="custPayLabel">PAY NOW</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass-panel p-6 rounded-3xl flex flex-col h-[500px]">
+                    <div class="flex items-center justify-between pb-4 border-b border-white/5 mb-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i data-lucide="clock" class="w-4 h-4 text-brand-accent"></i>
+                                Recent Payment History
+                            </h4>
+                            <p class="text-[11px] text-slate-400">Your completed transactions</p>
+                        </div>
+                        <button onclick="loadTransactions()" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition" title="Refresh">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="userTxList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ADMIN VIEW ==================== -->
+    <div id="adminDashboard" class="hidden space-y-8">
+        <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-2xl border border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg bg-brand-500/10 border border-brand-500/20 text-brand-500">
+                    <i data-lucide="terminal" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white font-mono">SYSTEM ADMINISTRATOR CONSOLE</h3>
+                    <p class="text-xs text-slate-400">PostgreSQL Schema Engine &bull; Hibernate Transactions &bull; JWT Validation</p>
+                </div>
+            </div>
+            <div class="flex gap-2 text-xs font-mono">
+                <span class="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-emerald-400">DB: payflowdb</span>
+                <span class="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-cyan-400">PORT: 5432</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="glass-panel p-7 rounded-3xl relative">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-base font-bold text-white font-mono flex items-center gap-2">
+                                <i data-lucide="cpu" class="w-5 h-5 text-brand-accent"></i>
+                                Direct API Dispatcher
+                            </h3>
+                            <p class="text-xs text-slate-400">Executes Spring Controller endpoints and persists to PostgreSQL</p>
+                        </div>
+                        <span class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-slate-300">POST /api/v1/payments/process</span>
+                    </div>
+
+                    <div class="w-full h-48 rounded-2xl p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/30 shadow-2xl mb-6 relative overflow-hidden font-mono flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold tracking-widest text-cyan-400">POSTGRESQL SYNC NODE</span>
+                            <span id="adminMethodBadge" class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-xs font-bold">UpiPayment</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-widest">TRANSACTION PAYLOAD AMOUNT</p>
+                            <p id="adminCardAmount" class="text-3xl font-extrabold text-white">₹0.00</p>
+                        </div>
+                        <div class="flex justify-between items-end text-xs text-slate-400">
+                            <div>
+                                <span class="text-[9px] uppercase block text-slate-500">Principal Customer</span>
+                                <span id="adminCardHolder" class="font-bold text-slate-200">—</span>
+                            </div>
+                            <span class="text-emerald-400 text-[11px]">RELATIONAL PERSISTENCE: ON</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 font-mono text-xs">
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1.5">Customer Database ID</label>
+                            <input id="adminCustId" type="number" value="1"
+                                   class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-brand-500" />
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1.5">Amount (INR)</label>
+                            <input id="adminPayAmount" type="number" step="0.01" min="0" placeholder="0.00" oninput="syncAdminAmount(this.value)"
+                                   class="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-xl font-bold text-emerald-400 focus:outline-none focus:border-emerald-500" />
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1.5">Payment Strategy</label>
+                            <select id="adminPayMethod" onchange="syncAdminMethod(this.value)"
+                                    class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="UpiPayment">UpiPayment (UPI / VPA)</option>
+                                <option value="CreditcardPayment">CreditcardPayment (Card 3DS)</option>
+                                <option value="WalletPayment">WalletPayment (Internal Wallet)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1.5">Notification Channel</label>
+                            <select id="adminNotifyType"
+                                    class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="emailNotification">emailNotification (SMTP Dispatch)</option>
+                                <option value="smsNotification">smsNotification (Cellular Alert)</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-medium text-slate-300 mb-1.5">Recipient Email for SMTP Ping</label>
+                            <input id="adminPayEmail" type="email" placeholder="admin_test@domain.com"
+                                   class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-brand-500" />
+                        </div>
+                    </div>
+
+                    <button id="btnAdminPay" onclick="handleAdminPayment()"
+                            class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 via-brand-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-sm font-mono tracking-wide shadow-xl shadow-brand-500/20 transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                        <span id="adminPaySpinner" class="hidden w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                        <i data-lucide="database" class="w-5 h-5" id="adminPayIcon"></i>
+                        <span id="adminPayLabel">EXECUTE & PERSIST TO POSTGRESQL</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass-panel p-6 rounded-3xl flex flex-col h-[260px]">
+                    <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+            <span class="text-xs font-mono font-bold text-slate-300 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-brand-accent"></span>
+              REST RESPONSE PAYLOAD
+            </span>
+                        <span id="httpStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">STANDBY</span>
+                    </div>
+                    <div class="flex-1 overflow-auto bg-slate-950 rounded-xl p-3 border border-white/5 font-mono text-[11px]">
+                        <pre id="apiConsoleOutput" class="text-emerald-400 whitespace-pre-wrap">// Waiting for execution trigger...</pre>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl flex flex-col h-[320px]">
+                    <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+            <span class="text-xs font-mono font-bold text-slate-200 flex items-center gap-2">
+              <i data-lucide="table" class="w-4 h-4 text-cyan-400"></i>
+              PostgreSQL Live Table: transactions
+            </span>
+                        <button onclick="loadTransactions()" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition" title="Refresh Ledger">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto space-y-2 pr-1 font-mono" id="adminTxList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
 
 <script>
-    // ⚠️ REPLACE THIS WITH YOUR LIVE RENDER BACKEND URL
-    const API_BASE_URL = "https://payflow-xxxx.onrender.com";
+    // Set this to your deployed Spring Boot backend's Render URL, e.g.
+    // "https://payflow-backend-xyz1.onrender.com/api/v1"
+    const API_BASE = "https://payflow-xxxx.onrender.com/api/v1";
 
-    function switchView(view) {
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('register-section').classList.add('hidden');
-        document.getElementById('dashboard-section').classList.add('hidden');
-        document.getElementById('message').innerText = '';
+    let currentAuthMode = 'login';
+    let authToken = localStorage.getItem('jwt_token') || null;
+    let authUser  = localStorage.getItem('jwt_user') || null;
+    let authRole  = localStorage.getItem('jwt_role') || null;
 
-        if (view === 'login') {
-            document.getElementById('login-section').classList.remove('hidden');
-        } else if (view === 'register') {
-            document.getElementById('register-section').classList.remove('hidden');
-        } else if (view === 'dashboard') {
-            document.getElementById('dashboard-section').classList.remove('hidden');
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initApp();
+      checkBackend();
+    });
+
+    // ---------- Connection health ----------
+    async function checkBackend() {
+      const el = document.getElementById('connIndicator');
+      const txt = document.getElementById('connText');
+      el.classList.remove('hidden');
+      el.className = 'conn-connecting sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-white/10 text-[11px] text-slate-400';
+      txt.textContent = 'Connecting…';
+      try {
+        await fetch(`${API_BASE}/auth/login`, { method: 'OPTIONS' });
+        el.className = 'conn-ok sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-white/10 text-[11px] text-slate-400';
+        txt.textContent = 'Connected';
+      } catch (e) {
+        el.className = 'conn-error sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-white/10 text-[11px] text-slate-400';
+        txt.textContent = 'Server waking up…';
+        setTimeout(checkBackend, 6000);
+      }
     }
 
-    // Handle Sign In Submission
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-        const msg = document.getElementById('message');
+    // ---------- App state ----------
+    function initApp() {
+      if (authToken) {
+        document.getElementById('authContainer').classList.add('hidden');
+        document.getElementById('userBadge').classList.remove('hidden');
+        document.getElementById('userBadge').classList.add('flex');
+        document.getElementById('loggedUsername').textContent = authUser;
+        document.getElementById('loggedRoleBadge').textContent = (authRole || '').replace('ROLE_', '');
 
-        msg.style.color = 'var(--text-muted)';
-        msg.innerText = 'Authenticating securely...';
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-
-            if (response.ok) {
-                document.getElementById('user-display').innerText = username;
-                switchView('dashboard');
-            } else {
-                msg.style.color = 'var(--error-color)';
-                msg.innerText = 'Invalid credentials provided.';
-            }
-        } catch (error) {
-            msg.style.color = 'var(--error-color)';
-            msg.innerText = 'Failed to fetch. Check API URL or wake Render server.';
+        if ((authRole || '').includes('ADMIN')) {
+          document.getElementById('customerDashboard').classList.add('hidden');
+          document.getElementById('adminDashboard').classList.remove('hidden');
+          document.getElementById('roleHeaderBadge').textContent = 'ADMIN CONSOLE';
+          document.getElementById('adminCardHolder').textContent = authUser;
+        } else {
+          document.getElementById('adminDashboard').classList.add('hidden');
+          document.getElementById('customerDashboard').classList.remove('hidden');
+          document.getElementById('roleHeaderBadge').textContent = 'CUSTOMER PORTAL';
+          document.getElementById('userCardHolder').textContent = authUser;
         }
-    });
+        loadTransactions();
+      } else {
+        document.getElementById('authContainer').classList.remove('hidden');
+        document.getElementById('customerDashboard').classList.add('hidden');
+        document.getElementById('adminDashboard').classList.add('hidden');
+        document.getElementById('userBadge').classList.add('hidden');
+        document.getElementById('userBadge').classList.remove('flex');
+      }
+      lucide.createIcons();
+    }
 
-    // Handle Registration Submission
-    document.getElementById('registerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const username = document.getElementById('reg-username').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-password').value;
-        const msg = document.getElementById('message');
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      const tabLogin = document.getElementById('tabLogin');
+      const tabReg = document.getElementById('tabRegister');
+      const roleGroup = document.getElementById('roleSelectorGroup');
+      const emailGroup = document.getElementById('authEmailGroup');
+      const passHint = document.getElementById('authPassHint');
+      const label = document.getElementById('authBtnLabel');
+      hideAuthError();
 
-        msg.style.color = 'var(--text-muted)';
-        msg.innerText = 'Creating account profile...';
+      if (mode === 'login') {
+        tabLogin.className = 'py-2.5 rounded-lg bg-brand-600 text-white shadow transition';
+        tabReg.className = 'py-2.5 rounded-lg text-slate-400 hover:text-white transition';
+        roleGroup.classList.add('hidden');
+        emailGroup.classList.add('hidden');
+        passHint.classList.add('hidden');
+        label.textContent = 'Sign In';
+      } else {
+        tabReg.className = 'py-2.5 rounded-lg bg-brand-600 text-white shadow transition';
+        tabLogin.className = 'py-2.5 rounded-lg text-slate-400 hover:text-white transition';
+        roleGroup.classList.remove('hidden');
+        emailGroup.classList.remove('hidden');
+        passHint.classList.remove('hidden');
+        label.textContent = 'Create Account';
+      }
+    }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
+    function showAuthError(msg) {
+      const el = document.getElementById('authInlineError');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+    function hideAuthError() {
+      document.getElementById('authInlineError').classList.add('hidden');
+    }
 
-            if (response.ok) {
-                msg.style.color = 'var(--success-color)';
-                msg.innerText = 'Account successfully registered! Redirecting...';
-                setTimeout(() => switchView('login'), 1500);
-            } else {
-                msg.style.color = 'var(--error-color)';
-                msg.innerText = 'Registration failed. Username or email may already exist.';
-            }
-        } catch (error) {
-            msg.style.color = 'var(--error-color)';
-            msg.innerText = 'Failed to fetch. Check API URL or wake Render server.';
+    function setAuthLoading(loading) {
+      const btn = document.getElementById('btnAuthSubmit');
+      document.getElementById('authBtnSpinner').classList.toggle('hidden', !loading);
+      document.getElementById('authBtnIcon').classList.toggle('hidden', loading);
+      btn.disabled = loading;
+    }
+
+    // ---------- Sync widgets ----------
+    function syncCustomerAmount(val) {
+      document.getElementById('userCardAmount').textContent = val ? `₹${parseFloat(val).toFixed(2)}` : '₹0.00';
+    }
+    function syncCustomerMethod(val) {
+      const badge = document.getElementById('userMethodBadge');
+      if (val === 'UpiPayment') badge.textContent = 'UPI Instant';
+      else if (val === 'CreditcardPayment') badge.textContent = 'Credit / Debit Card';
+      else if (val === 'WalletPayment') badge.textContent = 'Wallet Balance';
+    }
+    function syncAdminAmount(val) {
+      document.getElementById('adminCardAmount').textContent = val ? `₹${parseFloat(val).toFixed(2)}` : '₹0.00';
+    }
+    function syncAdminMethod(val) {
+      document.getElementById('adminMethodBadge').textContent = val;
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const colorClass = type === 'success'
+        ? 'border-emerald-500 bg-slate-900/95 text-emerald-400'
+        : 'border-rose-500 bg-slate-900/95 text-rose-400';
+      toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-xl text-xs font-semibold ${colorClass}`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    // ---------- Auth ----------
+    async function handleAuthSubmit() {
+      hideAuthError();
+      const username = document.getElementById('authUsername').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      const email = document.getElementById('authEmail').value.trim();
+
+      if (!username || !password) {
+        showAuthError('Please enter both username and password.');
+        return;
+      }
+      if (currentAuthMode === 'register') {
+        if (!email) { showAuthError('Please enter your email address.'); return; }
+        if (password.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
+      }
+
+      const endpoint = currentAuthMode === 'login' ? '/auth/login' : '/auth/register';
+      const payload = currentAuthMode === 'login'
+        ? { username, password }
+        : { username, email, password };
+
+      setAuthLoading(true);
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const rawText = await res.text();
+        let data;
+        try { data = JSON.parse(rawText); } catch { data = { message: rawText }; }
+
+        if (!res.ok) {
+          throw new Error(data.message || (res.status === 400 ? 'That username is already registered, or credentials are invalid.' : `Request failed (${res.status})`));
         }
-    });
+
+        if (currentAuthMode === 'register') {
+          showToast('Account created — please sign in.', 'success');
+          switchAuthTab('login');
+        } else {
+          authToken = data.token;
+          authUser = data.username;
+          authRole = data.role;
+          localStorage.setItem('jwt_token', authToken);
+          localStorage.setItem('jwt_user', authUser);
+          localStorage.setItem('jwt_role', authRole);
+          showToast(`Welcome back, ${authUser}!`, 'success');
+          initApp();
+        }
+      } catch (err) {
+        const msg = err.message === 'Failed to fetch'
+          ? 'Could not reach the server. It may still be waking up — try again shortly.'
+          : err.message;
+        showAuthError(msg);
+      } finally {
+        setAuthLoading(false);
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      authToken = null; authUser = null; authRole = null;
+      showToast('Signed out successfully', 'success');
+      initApp();
+    }
+
+    // ---------- Payments ----------
+    function setPayLoading(prefix, loading, label) {
+      document.getElementById(`${prefix}Spinner`).classList.toggle('hidden', !loading);
+      document.getElementById(`${prefix}Icon`).classList.toggle('hidden', loading);
+      document.getElementById(`${prefix}Label`).textContent = loading ? 'Processing…' : label;
+      document.getElementById(prefix === 'custPay' ? 'btnCustomerPay' : 'btnAdminPay').disabled = loading;
+    }
+
+    async function handleCustomerPayment() {
+      const emailInput = document.getElementById('userPayEmail').value.trim();
+      const amount = document.getElementById('userPayAmount').value;
+      if (!emailInput) { showToast('Please enter your email address for the receipt.', 'error'); return; }
+      if (!amount || parseFloat(amount) <= 0) { showToast('Enter a valid amount.', 'error'); return; }
+
+      const payload = {
+        customerId: parseInt(document.getElementById('userCustId').value),
+        username: authUser,
+        paymentMethod: document.getElementById('userPayMethod').value,
+        notificationType: document.getElementById('userNotifyType').value,
+        amount: parseFloat(amount),
+        recipientEmail: emailInput
+      };
+      setPayLoading('custPay', true, 'PAY NOW');
+      await executeTransaction(payload);
+      setPayLoading('custPay', false, 'PAY NOW');
+    }
+
+    async function handleAdminPayment() {
+      const emailInput = document.getElementById('adminPayEmail').value.trim();
+      const amount = document.getElementById('adminPayAmount').value;
+      if (!amount || parseFloat(amount) <= 0) { showToast('Enter a valid amount.', 'error'); return; }
+
+      const payload = {
+        customerId: parseInt(document.getElementById('adminCustId').value),
+        username: authUser,
+        paymentMethod: document.getElementById('adminPayMethod').value,
+        notificationType: document.getElementById('adminNotifyType').value,
+        amount: parseFloat(amount),
+        recipientEmail: emailInput
+      };
+      setPayLoading('adminPay', true, 'EXECUTE & PERSIST TO POSTGRESQL');
+      await executeTransaction(payload);
+      setPayLoading('adminPay', false, 'EXECUTE & PERSIST TO POSTGRESQL');
+    }
+
+    async function executeTransaction(payload) {
+      const consoleBox = document.getElementById('apiConsoleOutput');
+      const statusBadge = document.getElementById('httpStatusBadge');
+      if (statusBadge) statusBadge.textContent = 'WRITING TO DB...';
+
+      try {
+        const res = await fetch(`${API_BASE}/payments/process`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify(payload)
+        });
+
+        const rawText = await res.text();
+        let data;
+        try { data = JSON.parse(rawText); } catch { data = { rawResponse: rawText }; }
+
+        if (consoleBox) consoleBox.textContent = JSON.stringify(data, null, 2);
+
+        if (res.ok) {
+          if (statusBadge) statusBadge.textContent = '200 SUCCESS';
+          showToast(`Payment of ₹${payload.amount} was successful.`, 'success');
+          loadTransactions();
+        } else if (res.status === 401 || res.status === 403) {
+          if (statusBadge) statusBadge.textContent = `${res.status} UNAUTHORIZED`;
+          showToast('Your session has expired. Please sign in again.', 'error');
+        } else {
+          if (statusBadge) statusBadge.textContent = `${res.status} REJECTED`;
+          showToast(data.message || 'Payment execution rejected.', 'error');
+        }
+      } catch (err) {
+        if (consoleBox) consoleBox.textContent = 'Network error: ' + err.message;
+        if (statusBadge) statusBadge.textContent = 'NET_ERROR';
+        showToast('Could not reach the server.', 'error');
+      }
+    }
+
+    // ---------- Transaction history ----------
+    function skeletonRows(n) {
+      return Array.from({length:n}).map(() =>
+        `<div class="skeleton h-14 rounded-2xl"></div>`
+      ).join('');
+    }
+
+    async function loadTransactions() {
+      const userList = document.getElementById('userTxList');
+      const adminList = document.getElementById('adminTxList');
+      if (userList) userList.innerHTML = skeletonRows(4);
+      if (adminList) adminList.innerHTML = skeletonRows(4);
+
+      try {
+        const res = await fetch(`${API_BASE}/payments/transactions`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (res.status === 403) {
+          const msg = `<div class="text-center py-10 text-xs text-slate-500">History for your account isn't available here yet — this endpoint is admin-only.</div>`;
+          if (userList) userList.innerHTML = msg;
+          if (adminList) adminList.innerHTML = msg;
+          return;
+        }
+        if (!res.ok) {
+          const msg = `<div class="text-center py-10 text-xs text-slate-500">No payment records found.</div>`;
+          if (userList) userList.innerHTML = msg;
+          if (adminList) adminList.innerHTML = msg;
+          return;
+        }
+
+        const rawText = await res.text();
+        let data;
+        try { data = JSON.parse(rawText); } catch { return; }
+
+        if (Array.isArray(data) && data.length > 0) {
+          const recent = data.slice(-8).reverse();
+
+          if (userList) {
+            userList.innerHTML = '';
+            recent.forEach(t => {
+              let methodLabel = 'Payment';
+              const m = t.paymentMethod?.type || t.paymentMethod || '';
+              if (m.includes('Upi')) methodLabel = 'UPI Transfer';
+              else if (m.includes('Credit')) methodLabel = 'Card Payment';
+              else if (m.includes('Wallet')) methodLabel = 'Wallet';
+
+              const item = document.createElement('div');
+              item.className = 'flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/90 border border-white/5';
+              item.innerHTML = `
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <div class="text-xs font-bold text-white">${methodLabel}</div>
+                    <div class="text-[10px] text-slate-400">${t.createdAt ? String(t.createdAt).substring(0,16).replace('T',' ') : 'Completed'}</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs font-extrabold text-emerald-400">₹${parseFloat(t.amount).toFixed(2)}</div>
+                  <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold">Successful</span>
+                </div>`;
+              userList.appendChild(item);
+            });
+          }
+
+          if (adminList) {
+            adminList.innerHTML = '';
+            recent.forEach(t => {
+              const methodDisplay = t.paymentMethod?.type || t.paymentMethod || 'PAYMENT_METHOD';
+              const item = document.createElement('div');
+              item.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-white/5 text-xs';
+              item.innerHTML = `
+                <div>
+                  <div class="font-bold text-white">ROW ID: ${t.id} &bull; ${methodDisplay}</div>
+                  <div class="text-[10px] text-slate-400">TIMESTAMP: ${t.createdAt ? String(t.createdAt).substring(0,19).replace('T',' ') : 'N/A'}</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-emerald-400">₹${parseFloat(t.amount).toFixed(2)}</div>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">${t.status}</span>
+                </div>`;
+              adminList.appendChild(item);
+            });
+          }
+        } else {
+          const msg1 = `<div class="text-center py-10 text-xs text-slate-500">No payment history yet.</div>`;
+          const msg2 = `<div class="text-center py-10 text-xs text-slate-500">Table empty. 0 rows returned.</div>`;
+          if (userList) userList.innerHTML = msg1;
+          if (adminList) adminList.innerHTML = msg2;
+        }
+      } catch (err) {
+        const msg = `<div class="text-center py-10 text-xs text-rose-400">Couldn't load transactions — check your connection.</div>`;
+        if (userList) userList.innerHTML = msg;
+        if (adminList) adminList.innerHTML = msg;
+      }
+      lucide.createIcons();
+    }
 </script>
 </body>
 </html>
